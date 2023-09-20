@@ -1,7 +1,10 @@
+import math
+
 import pygame
 from queue import Queue
+from queue import LifoQueue
 
-WIDTH = 600
+WIDTH = 700
 WINDOW = pygame.display.set_mode((WIDTH,WIDTH))
 pygame.display.set_caption("Path Finder Visualization")
 
@@ -16,6 +19,34 @@ PINK = (255, 192, 203)
 GRAY = (128, 128, 128)
 PURPLE = (102, 0, 102)
 
+
+class PriorityQueue(object):
+    def __init__(self):
+        self.queue = []
+
+    # for checking if the queue is empty
+    def isEmpty(self):
+        return len(self.queue) == 0
+
+    # for inserting an element in the queue
+    def insert(self, data):
+        self.queue.append(data)
+
+    # for popping an element based on Priority
+    def delete(self):
+        try:
+            max_val = 0
+            for i in range(len(self.queue)):
+                if self.queue[i].get_distance() < self.queue[max_val].get_distance():
+                    max_val = i
+            item = self.queue[max_val]
+            del self.queue[max_val]
+            return item
+        except IndexError:
+            print()
+            exit()
+
+
 class Node():
     def __init__(self, row, col, width, total_rows):
         self.row = row
@@ -28,9 +59,16 @@ class Node():
         self.total_rows = total_rows
         self.visited = False
         self.prev = None
+        self.distance = math.inf
 
     def get_position(self):
         return self.row, self.col
+
+    def get_distance(self):
+        return self.distance
+
+    def set_distance(self, distance):
+        self.distance = distance
 
     def is_barrier(self):
         return self.color == BLACK
@@ -117,14 +155,14 @@ def draw_grid(window, rows, width):
             pygame.draw.line(window, GRAY, (j * gap, 0), (j * gap, width))
 
 
-def draw(window, grid, rows,width):
+def draw(window, grid, rows, width):
     window.fill(WHITE)
 
     for row in grid:
         for node in row:
             node.draw(window)
 
-    draw_grid(window,rows,width)
+    draw_grid(window, rows, width)
     pygame.display.update()
 
 def get_clicked_pos(pos,rows, width):
@@ -158,25 +196,140 @@ def bfs(draw, grid, start_node, end_node):
         if node != start_node:
             node.set_to_close()
     return False
-    # path = []
-    # spot = end_node
-    # while spot != None:
-    #     path.append(spot)
-    #     spot = spot.get_prev()
-    # path.reverse()
-    # for win in path:
-    #     win.set_path()
 
+
+def dfs(draw, start_node, end_node):
+    start_node.set_visited()
+    stack = LifoQueue()
+    stack.put(start_node)
+    while not stack.empty():
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+        node = stack.get()
+        if node == end_node:
+            reconstruct_path(node, draw)
+            end_node.set_to_end()
+            start_node.set_to_start()
+            return True
+        for neighbor in node.neighbors:
+            if (not neighbor.get_visited()) and (not neighbor.is_barrier()):
+                stack.put(neighbor)
+                neighbor.set_visited()
+                neighbor.set_prev(node)
+                neighbor.set_to_open()
+        draw()
+        if node != start_node:
+            node.set_to_close()
+    return False
+
+
+def dijkstra(draw, grid, start_node, end_node):
+    q = PriorityQueue()
+    for row in grid:
+        for node in row:
+            q.insert(node)
+    start_node.set_distance(0)
+    while not q.isEmpty():
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+        u = q.delete()
+        for v in u.neighbors:
+            if v.get_visited() == False and not v.is_barrier():
+                v.set_to_open()
+                v.set_visited()
+                tempDist = u.get_distance() + 1
+                if tempDist < v.get_distance():
+                    v.set_distance(tempDist)
+                    v.set_prev(u)
+        draw()
+        if u != start_node and u != end_node and not u.is_barrier():
+            u.set_to_close()
+    reconstruct_path(end_node, draw)
+    start_node.set_to_start()
+    end_node.set_to_end()
+
+
+
+
+    """
+        for each vertex V in G:
+            distances[V] = inf
+            prev[V] = None
+            if V != Start_node:
+                add V to priority Q(according to distance)
+        distances[Start_node] = 0
+
+        while Q is not empty:
+            u = min(Q)
+            for each unvisited neighbor V of u:
+                tempDist = distance(u) + 1
+                if tempDist < distance[V]:
+                    distance[V] = tempDist
+                    prev[V] = u
+            
+
+
+    """
+
+    """
+    short_path = []
+    unvisited = []
+    distance = 0
+    min_node = start_node
+    for row in grid:
+        for node in row:
+            if node != start_node:
+                node.set_distance(math.inf)
+                unvisited.append(node)
+    start_node.set_distance(distance)
+    while node != end_node:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+        min_node = find_min_distance(grid)
+        min_node.set_distance(distance)
+        min_node.set_visited()
+        short_path.append(min_node)
+        for neighbor in min_node.neighbors:
+            if neighbor == end_node:
+                break
+            elif (not neighbor.get_visited()) and (not neighbor.is_barrier()):
+                if min_node.get_distance() + 1 < neighbor.get_distance():
+                    neighbor.set_distance(min_node.get_distance() + 1)
+                    neighbor.set_prev(min_node)
+                    neighbor.set_visited()
+                    neighbor.set_to_open()
+        draw()
+        if min_node != start_node:
+            node.set_to_close()
+
+        distance += 1
+
+    for node in short_path:
+        node.set_path()
+"""
 
 def reconstruct_path(current,draw):
     while current != None:
         current.set_path()
         current = current.get_prev()
-        draw
+        draw()
+
+def find_min_distance(grid):
+    min = math.inf
+    min_node = Node
+    for row in grid:
+        for node in row:
+            if(node.get_distance() < min and node.visited == False):
+                min = node.get_distance()
+                min_node = node
+    return min_node
 
 
 def main(window, width):
-    ROWS = 40
+    ROWS = 50
     grid = set_grid(ROWS, width)
 
     start = None
@@ -220,7 +373,9 @@ def main(window, width):
                     for row in grid:
                         for node in row:
                             node.set_neighbors(grid)
-                    bfs(lambda: draw(window, grid, ROWS, width), grid, start, end)
+                    #bfs(lambda: draw(window, grid, ROWS, width), grid, start, end)
+                    #dfs(lambda :draw(window,grid,ROWS,width), start, end)
+                    dijkstra(lambda :draw(window, grid, ROWS, width), grid, start, end)
 
                 if event.key == pygame.K_r:
                     start = None
