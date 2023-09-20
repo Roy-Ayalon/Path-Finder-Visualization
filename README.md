@@ -4,7 +4,7 @@ This is my own project to show different path finding algorithms, with visualiza
 
 # BFS
 
-![bfs final](https://github.com/Roy-Ayalon/Path-Finder-Visualization/assets/90352235/c4d82452-3784-4e3e-983f-5907ac7e8ac4)
+![bfs final](https://github.com/Roy-Ayalon/Path-Finder-Visualization/assets/90352235/bd8f15f0-0533-4c6d-ac3f-64e5204fdd9f)
 
 
 
@@ -23,7 +23,7 @@ This is my own project to show different path finding algorithms, with visualiza
 
 7. # DFS
 
-8. ![dfs](https://github.com/Roy-Ayalon/Path-Finder-Visualization/assets/90352235/37d03a4a-a720-49fd-8502-66286c8cdb7c)
+![dfs final](https://github.com/Roy-Ayalon/Path-Finder-Visualization/assets/90352235/8e883c48-7845-4b25-8a60-958d86d5e4e5)
 
 
 
