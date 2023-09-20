@@ -21,7 +21,7 @@ This is my own project to show different path finding algorithms, with visualiza
 
 6. Visualization: During each step, the visualization tool highlights the current node being visited and the nodes in the queue. This dynamic visualization helps you understand the order and progression of the algorithm.
 
-7. # DFS
+ # DFS
 
 ![dfs final](https://github.com/Roy-Ayalon/Path-Finder-Visualization/assets/90352235/8e883c48-7845-4b25-8a60-958d86d5e4e5)
 
@@ -42,4 +42,20 @@ This is my own project to show different path finding algorithms, with visualiza
 6. Repeat: Continue steps 2-5 until all nodes have been visited or until you've reached your desired goal (e.g., finding a specific node in the graph).
 
 7. Termination: The algorithm terminates when you have visited all nodes, or you have achieved your specific objective, such as finding a target node.
+
+
+# Dijkstra
+
+![dijkstra gif](https://github.com/Roy-Ayalon/Path-Finder-Visualization/assets/90352235/079d90a4-9b34-4f62-9be2-7c0294312f16)
+
+**Dijkstra Steps:**
+
+1. Select the Next Vertex: Find the vertex with the smallest distance value among the unvisited vertices. Initially, this will be the source vertex.
+
+2. Relaxation: For the selected vertex, consider all its unvisited neighbors. Calculate their tentative distance through the current vertex. Compare this newly calculated tentative distance to the current assigned value and update it if the new distance is smaller. Essentially, you are improving the known distances to each neighboring vertex through the current vertex.
+
+3. Mark as Visited: Once you've considered all the neighbors of the current vertex, mark it as visited (or add it to the visited set) to prevent revisiting it.
+
+4. Repeat: Repeat steps 2 through 4 until you have visited all vertices or until the vertex with the smallest distance among unvisited vertices is at infinity (indicating that there is no path to it).
+
 
